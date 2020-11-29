@@ -9,12 +9,12 @@ def insert_pointer(string, index):
 	return string[:index] + "->" + string[index:]
 
 #Simulates the TWA machine 
-class StateMachine:
+class TWA:
 	def __init__(self, states):
 		self.states = states
 
-	def eval(self, test):
-		self.arrow = 1
+	def simulateMachine(self, test):
+		self.currPosition = 1
 
 		# temp = test
 		# # print(f"Temporary String Test: {temp}")
@@ -31,7 +31,7 @@ class StateMachine:
 				print("==============================================================================")
 				print(f"Currently at State: {str(self.currentState)}")
 
-				char = test[self.arrow]
+				char = test[self.currPosition]
 				inv = char
 				print(f"Input: {char}")
 				transition = self.states[self.currentState].getTransition(char)
@@ -44,9 +44,9 @@ class StateMachine:
 					print("Action: Last State Reached")
 
 				if self.states[self.currentState].getMove() == 'right':
-					self.arrow += 1
+					self.currPosition += 1
 				elif self.states[self.currentState].getMove() == 'left':
-					self.arrow -= 1
+					self.currPosition -= 1
 
 			print(f"Result of the input: {self.states[self.currentState].getMove()}")
 			print("==============================================================================")
@@ -57,22 +57,22 @@ class StateMachine:
 
 #Object that holds the information of each state from the CSV File
 class State:
-	def __init__(self, sid, move):
-		self.sid = sid
+	def __init__(self, stateNo, move):
+		self.stateNo = stateNo
 		self.move = move
 		self.transitions = {}
 
-	def getIndex(self,sid):
-		return self.sid
-
-	def addTransition(self, transition):
-		self.transitions[transition[0]] = int(transition[1])
-
-	def getTransition(self, symbol):
-		return self.transitions[symbol]
+	def getIndex(self,stateNo):
+		return self.stateNo
 
 	def getMove(self):
 		return self.move
+
+	def getTransition(self, char):
+		return self.transitions[char]
+
+	def setTransition(self, transition):
+		self.transitions[transition[0]] = int(transition[1])
 
 #TWA CSV Files 
 test1 = "Even-a.csv"
@@ -84,24 +84,24 @@ test5 = "3a_More-b.csv"
 #Open CSV Files
 with open(test1) as csv_file:
 	csv_reader = csv.reader(csv_file, delimiter=',')
-	line_count = 0
+	state_count = 0
 	states = {}
 	print ("=========TWO WAY ACCEPTER SIMULATION=========")
 	print(f"Loading TWA File: {test1}")
 
 	# CSV FORMAT: row[0] = state number, row[1] = action taken, row [2] = char input and transitions
 	for row in csv_reader:
-		sid = int(row[0])
+		stateNo = int(row[0])
 		move = row[1]
-		if sid not in states:
-			states[sid] = State(sid, move)
+		if stateNo not in states:
+			states[stateNo] = State(stateNo, move)
 		for index in range(2, len(row)):
 			transition = row[index]
 			if transition != '':
 				transition = transition.split(',')
-				states[sid].addTransition(transition)
-		line_count += 1
-	print(f'Finished loading {line_count} number of states.')
+				states[stateNo].setTransition(transition)
+		state_count += 1
+	print(f'Finished loading {state_count} number of states.')
 
 #Main Program
 # eval = "aabb"
@@ -112,5 +112,5 @@ eval = insert_hashtag(eval, len(eval))
 
 print(f"Evaluating String: {eval}")
 
-sm = StateMachine(states)
-sm.eval(eval)
+sm = TWA(states)
+sm.simulateMachine(eval)
