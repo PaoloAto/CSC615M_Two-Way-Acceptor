@@ -1,4 +1,5 @@
 import csv
+import time
 
 #Method for inserting the hastags '#' in the first and last index to simulate the tape
 def insert_hashtag(string, index):
@@ -28,6 +29,7 @@ class TWA:
 			#while loop runs as long as the accept and reject states are not yet reached
 			inv = ''
 			while self.states[self.currentState].getMove() != 'accept' and self.states[self.currentState].getMove() != 'reject':
+				time.sleep(1.5)
 				print("==============================================================================")
 				print(f"Currently at State: {str(self.currentState)}")
 
